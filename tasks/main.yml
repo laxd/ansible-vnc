@@ -1,0 +1,58 @@
+---
+- name: Install VNC packages
+  become: yes
+  package:
+    name: "{{ vnc_package_name }}"
+    state: present
+
+- name: Create systemd service
+  template:
+    src: vncserver.service
+    dest: /etc/systemd/vncserver@:1.service
+    mode: 0744
+    owner: root
+    group: root
+  notify:
+    - Reload systemd
+
+- name: Create vnc config dir for user
+  file:
+    path: "{{ vnc_config_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+
+- name: Create user config
+  template:
+    src: vnc_config
+    dest: "{{ vnc_config_dir }}/config"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+  notify:
+    - Restart vnc
+
+- name: Create xstartup file
+  template:
+    src: xstartup
+    dest: "{{ vnc_config_dir }}/xstartup"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+  notify:
+    - Restart vnc
+
+- name: Copy passwd file
+  copy:
+    src: "{{ vnc_passwd_file }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+
+- name: Set to start at boot
+  systemd:
+    daemon_reload: yes
+    name: vncserver@:1
+    state: started
+    enabled: yes
