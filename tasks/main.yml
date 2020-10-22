@@ -9,7 +9,7 @@
   become: yes
   template:
     src: vncserver.service
-    dest: /etc/systemd/vncserver@:1.service
+    dest: /etc/systemd/system/vncserver@:1.service
     mode: 0744
     owner: root
     group: root
@@ -63,7 +63,7 @@
     mode: 0600
   when: vnc_passwd_file.stat.exists
 
-- name: Set to start at boot
+- name: Set VNC to start at boot
   become: yes
   systemd:
     daemon_reload: yes
