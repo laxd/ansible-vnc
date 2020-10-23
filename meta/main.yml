@@ -1,5 +1,6 @@
 galaxy_info:
   author: Lawrence Andrews
+  role_name: vnc
   description: VNC server 
 
   # If the issue tracker for your role is not on github, uncomment the
